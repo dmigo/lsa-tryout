@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Any
-from ..utils.data_models import (
+from llm_seo_agent.utils.data_models import (
     ConversationSession, ConversationMessage, UserProfile,
     SEORecommendation, WebsiteAnalysis, CompetitorAnalysis, ConversationRole
 )

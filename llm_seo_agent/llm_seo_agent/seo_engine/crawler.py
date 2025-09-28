@@ -6,7 +6,7 @@ from typing import List, Dict, Set, Optional, Any
 import time
 import re
 from dataclasses import dataclass
-from ..utils.data_models import WebsiteAnalysis
+from llm_seo_agent.utils.data_models import WebsiteAnalysis
 
 
 @dataclass

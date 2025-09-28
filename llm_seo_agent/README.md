@@ -44,11 +44,14 @@ A conversational AI agent powered by Claude that helps optimize websites for AI 
 git clone <repository-url>
 cd llm_seo_agent
 
-# Install dependencies
-pip install -r requirements.txt
+# Install with uv (recommended - much faster!)
+uv sync
+
+# Or install with specific optional features
+uv sync --extra web --extra analysis --extra all
 
 # Install spaCy model for advanced content analysis (optional)
-python -m spacy download en_core_web_sm
+uv run python -m spacy download en_core_web_sm
 ```
 
 ### 2. Setup
@@ -58,26 +61,26 @@ python -m spacy download en_core_web_sm
 export CLAUDE_API_KEY='your-claude-api-key-here'
 
 # Run setup to create directories and check dependencies
-python main.py setup
+uv run python main.py setup
 ```
 
 ### 3. Start Using
 
 ```bash
 # Interactive chat mode (recommended for first-time users)
-python main.py chat --setup
+uv run python main.py chat --setup
 
 # Direct chat mode
-python main.py chat
+uv run python main.py chat
 
-# Web interface
-python main.py web
+# Web interface (requires --extra web)
+uv run python main.py web
 
 # Quick website analysis
-python main.py analyze https://example.com
+uv run python main.py analyze https://example.com
 
 # Compare against competitors
-python main.py compare https://yoursite.com https://competitor1.com https://competitor2.com
+uv run python main.py compare https://yoursite.com https://competitor1.com https://competitor2.com
 ```
 
 ## 💬 Example Conversations
@@ -139,20 +142,24 @@ Agent: *analyzes competitor*
 
 ```bash
 # Main commands
-python main.py chat           # Start interactive chat
-python main.py web            # Launch web interface
-python main.py analyze <url>  # Quick analysis
-python main.py compare <url> <competitor1> <competitor2>  # Competitive analysis
+uv run python main.py chat           # Start interactive chat
+uv run python main.py web            # Launch web interface
+uv run python main.py analyze <url>  # Quick analysis
+uv run python main.py compare <url> <competitor1> <competitor2>  # Competitive analysis
 
 # Setup and configuration
-python main.py setup          # Initial setup
-python main.py config         # View configuration
-python main.py version        # Version info
+uv run python main.py setup          # Initial setup
+uv run python main.py config         # View configuration
+uv run python main.py version        # Version info
 
 # Chat options
-python main.py chat --setup   # Interactive onboarding
-python main.py chat --url example.com  # Quick analysis mode
-python main.py chat --api-key <key>    # Use specific API key
+uv run python main.py chat --setup   # Interactive onboarding
+uv run python main.py chat --url example.com  # Quick analysis mode
+uv run python main.py chat --api-key <key>    # Use specific API key
+
+# Alternative: Use as installed script (after uv sync)
+uv run llm-seo-agent chat            # Direct script access
+uv run seo-agent analyze <url>       # Shorter alias
 ```
 
 ## 🎛️ Configuration
@@ -244,7 +251,7 @@ async def custom_analysis():
 ```bash
 # Analyze multiple sites
 for site in site1.com site2.com site3.com; do
-    python main.py analyze $site --format json >> analysis_results.json
+    uv run python main.py analyze $site --format json >> analysis_results.json
 done
 ```
 
@@ -313,9 +320,23 @@ The agent tracks these key metrics:
 ## 📋 Requirements
 
 - Python 3.8+
+- [uv](https://docs.astral.sh/uv/) (recommended) or pip for package management
 - Claude API key (required)
 - 100MB disk space for data storage
 - Optional: spaCy model for advanced content analysis
+
+### Installing uv
+
+```bash
+# macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Or with pip
+pip install uv
+```
 
 ## 🚨 Troubleshooting
 
@@ -334,8 +355,8 @@ export CLAUDE_API_KEY='your-api-key-here'
 
 **"Streamlit won't start"**
 ```bash
-pip install streamlit plotly
-python main.py web
+uv sync --extra web
+uv run python main.py web
 ```
 
 **"Memory issues with large sites"**

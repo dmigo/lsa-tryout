@@ -12,7 +12,7 @@ from rich.syntax import Syntax
 from typing import Optional
 import signal
 
-from ..agent.conversation_manager import ConversationManager
+from llm_seo_agent.agent.conversation_manager import ConversationManager
 
 
 class CLIChatInterface:

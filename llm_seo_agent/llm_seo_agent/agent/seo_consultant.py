@@ -3,8 +3,8 @@ import asyncio
 from typing import Dict, List, Any, Optional
 from .memory import ConversationMemory
 from .tools import SEOTools
-from ..utils.claude_client import ClaudeClient
-from ..utils.data_models import (
+from llm_seo_agent.utils.claude_client import ClaudeClient
+from llm_seo_agent.utils.data_models import (
     ConversationRole, SEORecommendation, ToolResponse
 )
 

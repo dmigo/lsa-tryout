@@ -5,7 +5,7 @@ from typing import Dict, List, Any, Optional
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
 import re
-from ..utils.data_models import ToolResponse, WebsiteAnalysis, CompetitorAnalysis
+from llm_seo_agent.utils.data_models import ToolResponse, WebsiteAnalysis, CompetitorAnalysis
 
 
 class SEOTools:

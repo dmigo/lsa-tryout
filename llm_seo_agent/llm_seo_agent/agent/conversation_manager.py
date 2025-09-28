@@ -1,7 +1,7 @@
 import asyncio
 from typing import Dict, List, Any, Optional, Callable
 from .seo_consultant import SEOConsultant
-from ..utils.data_models import ConversationRole
+from llm_seo_agent.utils.data_models import ConversationRole
 
 
 class ConversationManager:

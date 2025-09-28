@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, List
 import json
 
-from ..agent.conversation_manager import ConversationManager
+from llm_seo_agent.agent.conversation_manager import ConversationManager
 
 
 class StreamlitWebInterface:

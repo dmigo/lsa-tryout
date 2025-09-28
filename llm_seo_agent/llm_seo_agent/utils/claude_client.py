@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Any
 from anthropic import Anthropic
 import json
 import os
-from ..utils.data_models import ToolResponse
+from llm_seo_agent.utils.data_models import ToolResponse
 
 
 class ClaudeClient:

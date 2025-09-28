@@ -6,7 +6,7 @@ import time
 from datetime import datetime, timedelta
 from .crawler import WebCrawler
 from .content_analyzer import ContentAnalyzer
-from ..utils.data_models import CompetitorAnalysis
+from llm_seo_agent.utils.data_models import CompetitorAnalysis
 
 
 class CompetitorTracker:
