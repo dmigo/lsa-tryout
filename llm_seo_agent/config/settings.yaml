@@ -1,0 +1,127 @@
+# LLM SEO Agent Configuration
+
+# Claude API Configuration
+claude:
+  api_key: "${CLAUDE_API_KEY}"  # Set as environment variable
+  model: "claude-3-sonnet-20240229"
+  max_tokens: 4000
+  temperature: 0.7
+
+# Agent Personality and Behavior
+agent:
+  personality: "friendly_expert"  # Options: friendly_expert, professional, casual
+  proactive_suggestions: true
+  memory_retention_days: 30
+  max_conversation_context: 10  # Number of recent messages to include in context
+
+# Interface Configuration
+interfaces:
+  cli:
+    enabled: true
+    rich_formatting: true
+    spinner_style: "dots"
+
+  web:
+    enabled: true
+    port: 8501
+    theme: "light"  # Options: light, dark
+    analytics_dashboard: true
+
+  slack:
+    enabled: false
+    bot_token: "${SLACK_BOT_TOKEN}"
+    signing_secret: "${SLACK_SIGNING_SECRET}"
+
+# SEO Tools Configuration
+seo_tools:
+  web_crawler:
+    max_concurrent_requests: 5
+    request_delay: 1.0  # seconds
+    timeout: 30  # seconds
+    max_pages_per_site: 10
+
+  content_analyzer:
+    enable_nlp: true
+    spacy_model: "en_core_web_sm"
+
+  competitor_tracker:
+    max_competitors: 5
+    analysis_depth: "standard"  # Options: basic, standard, comprehensive
+
+  performance_monitor:
+    data_retention_days: 365
+    update_frequency: "daily"  # Options: hourly, daily, weekly
+
+# Storage Configuration
+storage:
+  conversations_path: "data/conversations"
+  performance_data_path: "data/performance"
+  cache_path: "data/cache"
+  max_cache_size_mb: 100
+
+# Logging Configuration
+logging:
+  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR
+  file: "logs/seo_agent.log"
+  max_file_size_mb: 10
+  backup_count: 5
+
+# Rate Limiting
+rate_limiting:
+  claude_api:
+    requests_per_minute: 50
+
+  web_requests:
+    requests_per_second: 2
+
+# Security
+security:
+  allowed_domains: []  # Empty list allows all domains
+  blocked_domains: []
+  max_crawl_depth: 3
+
+# Features Toggle
+features:
+  ai_citation_tracking: true
+  competitor_analysis: true
+  performance_monitoring: true
+  content_suggestions: true
+  technical_seo_audit: true
+  schema_markup_detection: true
+
+# Integrations (optional)
+integrations:
+  google_search_console:
+    enabled: false
+    credentials_path: ""
+
+  google_analytics:
+    enabled: false
+    credentials_path: ""
+
+  ahrefs:
+    enabled: false
+    api_key: "${AHREFS_API_KEY}"
+
+  semrush:
+    enabled: false
+    api_key: "${SEMRUSH_API_KEY}"
+
+# Notification Settings
+notifications:
+  email:
+    enabled: false
+    smtp_server: ""
+    smtp_port: 587
+    username: ""
+    password: "${EMAIL_PASSWORD}"
+
+  slack:
+    enabled: false
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+
+# Development Settings
+development:
+  debug_mode: false
+  mock_api_responses: false
+  test_data_path: "tests/data"

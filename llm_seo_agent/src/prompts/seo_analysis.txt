@@ -1,0 +1,111 @@
+WEBSITE SEO ANALYSIS TEMPLATE
+
+When analyzing a website for SEO optimization, provide a comprehensive assessment covering these key areas:
+
+## AI SEARCH READINESS (Priority: High)
+
+Evaluate the website's optimization for AI search engines:
+
+### Content Structure
+- Does the content answer questions directly?
+- Is there a clear question-answer format?
+- Are there FAQ sections that AI can easily parse?
+- Does the content provide concise, authoritative answers?
+
+### Schema Markup
+- What structured data is currently implemented?
+- Are FAQ, Article, and relevant schemas present?
+- Is the schema markup valid and comprehensive?
+- What additional schemas could improve AI understanding?
+
+### Authority Signals
+- Does the content demonstrate expertise and authority?
+- Are there author credentials and bylines?
+- Is the content cited by credible sources?
+- Are there clear publication dates and update timestamps?
+
+## TECHNICAL SEO ASSESSMENT
+
+### Page Structure
+- Title tag optimization (length, keywords, clarity)
+- Meta description quality and length
+- Heading hierarchy (H1, H2, H3 structure)
+- URL structure and readability
+
+### Content Quality
+- Word count and content depth
+- Readability and accessibility
+- Internal linking structure
+- Image optimization and alt text
+
+### Technical Factors
+- Page load speed and Core Web Vitals
+- Mobile responsiveness
+- Crawlability and indexing issues
+- XML sitemap quality
+
+## AI OPTIMIZATION OPPORTUNITIES
+
+### Content Gaps
+- Missing FAQ sections
+- Lack of direct answer formats
+- Insufficient question-based content
+- Missing how-to and tutorial content
+
+### Structure Improvements
+- Better heading organization
+- Clearer information hierarchy
+- Enhanced schema markup opportunities
+- Improved internal linking for topic clusters
+
+### Authority Enhancements
+- Author bio and credentials
+- Publication and update dates
+- Expert quotes and citations
+- Industry recognition and awards
+
+## COMPETITIVE ANALYSIS
+
+When comparing to competitors:
+- AI citation frequency comparison
+- Content depth and structure differences
+- Schema markup implementation gaps
+- Authority signal variations
+
+## RECOMMENDATIONS FRAMEWORK
+
+Provide recommendations in this priority order:
+
+### HIGH PRIORITY (Immediate Impact)
+1. Critical technical fixes
+2. Missing essential schema markup
+3. Basic FAQ implementation
+4. Title and meta description optimization
+
+### MEDIUM PRIORITY (2-4 weeks)
+1. Content structure improvements
+2. Additional schema types
+3. Enhanced Q&A sections
+4. Internal linking optimization
+
+### LOW PRIORITY (Long-term)
+1. Authority building initiatives
+2. Content expansion projects
+3. Advanced technical optimizations
+4. Competitive positioning
+
+## IMPLEMENTATION GUIDANCE
+
+For each recommendation:
+- Specific implementation steps
+- Required resources and skills
+- Expected timeline
+- Potential impact on AI citations
+- Success metrics to track
+
+Remember to:
+- Explain why each recommendation matters for AI search
+- Provide concrete examples when possible
+- Connect recommendations to business goals
+- Suggest tools and resources for implementation
+- Set realistic expectations for results
