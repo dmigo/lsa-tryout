@@ -27,7 +27,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 keywords = ["seo", "ai", "claude", "chatgpt", "optimization", "llm", "conversational-ai"]
-requires-python = ">=3.8"
+requires-python = ">=3.8.1"
 
 # Core dependencies
 dependencies = [

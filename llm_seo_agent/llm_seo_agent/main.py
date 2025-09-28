@@ -14,8 +14,8 @@ import yaml
 from rich.console import Console
 from rich.panel import Panel
 
-from llm_seo_agent.interfaces.cli_chat import CLIChatInterface, InteractiveCLI, main as cli_main
-from llm_seo_agent.agent.conversation_manager import ConversationManager
+from .interfaces.cli_chat import CLIChatInterface, InteractiveCLI, main as cli_main
+from .agent.conversation_manager import ConversationManager
 
 
 console = Console()
@@ -102,7 +102,7 @@ def web():
         import sys
 
         # Get the web interface file path
-        web_file = Path(__file__).parent / "llm_seo_agent" / "interfaces" / "web_chat.py"
+        web_file = Path(__file__).parent / "interfaces" / "web_chat.py"
 
         # Run streamlit
         sys.argv = [

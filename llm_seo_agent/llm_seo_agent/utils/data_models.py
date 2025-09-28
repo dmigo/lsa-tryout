@@ -30,9 +30,9 @@ class SEORecommendation(BaseModel):
     id: str
     title: str
     description: str
-    priority: str = Field(..., regex="^(high|medium|low)$")
+    priority: str = Field(..., pattern="^(high|medium|low)$")
     category: str
-    implementation_status: str = Field(default="pending", regex="^(pending|in_progress|completed|dismissed)$")
+    implementation_status: str = Field(default="pending", pattern="^(pending|in_progress|completed|dismissed)$")
     created_at: datetime = Field(default_factory=datetime.now)
     estimated_impact: Optional[str] = None
 
