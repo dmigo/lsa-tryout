@@ -9,9 +9,9 @@ from llm_seo_agent.utils.data_models import ToolResponse
 
 class ClaudeClient:
     def __init__(self, api_key: Optional[str] = None, model: str = "claude-3-sonnet-20240229"):
-        self.api_key = api_key or os.getenv("CLAUDE_API_KEY")
+        self.api_key = api_key or os.getenv("CLAUDE_API_KEY") or os.getenv("ANTHROPIC_API_KEY")
         if not self.api_key:
-            raise ValueError("Claude API key must be provided or set as CLAUDE_API_KEY environment variable")
+            raise ValueError("Claude API key must be provided or set as CLAUDE_API_KEY or ANTHROPIC_API_KEY environment variable")
 
         self.client = Anthropic(api_key=self.api_key)
         self.model = model

@@ -88,6 +88,7 @@ def chat(url, setup, api_key):
         if "api_key" in str(e).lower():
             console.print("\n[yellow]💡 Tip: Set your Claude API key with:[/yellow]")
             console.print("   export CLAUDE_API_KEY='your-api-key-here'")
+            console.print("   export ANTHROPIC_API_KEY='your-api-key-here'")
             console.print("   Or use: --api-key your-api-key-here")
 
 
@@ -256,12 +257,13 @@ def setup():
             console.print(f"📁 Directory exists: {dir_path}")
 
     # Check for Claude API key
-    api_key = os.getenv('CLAUDE_API_KEY')
+    api_key = os.getenv('CLAUDE_API_KEY') or os.getenv('ANTHROPIC_API_KEY')
     if api_key:
         console.print("✅ Claude API key found in environment")
     else:
         console.print("[yellow]⚠️  Claude API key not found[/yellow]")
         console.print("Set it with: export CLAUDE_API_KEY='your-api-key'")
+        console.print("         or: export ANTHROPIC_API_KEY='your-api-key'")
 
     # Check for optional dependencies
     optional_deps = [
