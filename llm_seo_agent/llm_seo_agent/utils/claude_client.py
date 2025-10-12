@@ -194,3 +194,33 @@ class ClaudeClient:
             context=context,
             system_prompt=system_prompt
         )
+
+    async def generate_response_with_tools(self, user_message: str, context: str,
+                                          system_prompt: str, tools: List[Dict]) -> Any:
+        """Generate a response with tool calling support. Returns the raw response object."""
+
+        messages = []
+        if context:
+            messages.append({
+                "role": "user",
+                "content": f"Context from previous conversation:\n{context}\n\nCurrent message: {user_message}"
+            })
+        else:
+            messages.append({
+                "role": "user",
+                "content": user_message
+            })
+
+        try:
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=4000,
+                system=system_prompt,
+                messages=messages,
+                tools=tools
+            )
+            return response
+
+        except Exception as e:
+            self.logger.error(f"Error generating response with tools: {e}")
+            raise
