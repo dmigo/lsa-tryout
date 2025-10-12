@@ -52,10 +52,14 @@ class ClaudeClient:
                 )
 
             if response.content:
-                if isinstance(response.content[0], dict) and 'text' in response.content[0]:
-                    return response.content[0]['text']
+                # Handle TextBlock objects from newer SDK
+                content_block = response.content[0]
+                if hasattr(content_block, 'text'):
+                    return content_block.text
+                elif isinstance(content_block, dict) and 'text' in content_block:
+                    return content_block['text']
                 else:
-                    return str(response.content[0])
+                    return str(content_block)
 
             return "I apologize, but I couldn't generate a response. Please try again."
 
