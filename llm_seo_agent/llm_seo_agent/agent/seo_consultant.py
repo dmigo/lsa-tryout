@@ -5,7 +5,7 @@ from .memory import ConversationMemory
 from .tools import SEOTools
 from llm_seo_agent.utils.claude_client import ClaudeClient
 from llm_seo_agent.utils.data_models import (
-    ConversationRole, SEORecommendation, ToolResponse
+    ConversationRole, SEORecommendation, ToolResponse, WebsiteAnalysis
 )
 
 
@@ -89,6 +89,24 @@ class SEOConsultant:
                     },
                     "required": ["domain"]
                 }
+            },
+            {
+                "name": "write_report_to_file",
+                "description": "Writes a comprehensive SEO analysis report to a markdown file. Use this after analyzing a website to save a detailed, well-formatted report that the user can share with colleagues or clients. Write the report in a professional, narrative style with all insights, recommendations, and action plans.",
+                "input_schema": {
+                    "type": "object",
+                    "properties": {
+                        "filename": {
+                            "type": "string",
+                            "description": "The output filename (e.g., 'suhas_org_seo_analysis.md'). Use descriptive names based on the website analyzed."
+                        },
+                        "content": {
+                            "type": "string",
+                            "description": "The full markdown content of the report. Include executive summary, detailed findings, AI readiness score, technical issues, content suggestions, recommendations with priorities, and action plan."
+                        }
+                    },
+                    "required": ["filename", "content"]
+                }
             }
         ]
 
@@ -142,6 +160,7 @@ class SEOConsultant:
         - Competitive analysis for AI search
 
         When a user asks about analyzing a website, checking competitors, or tracking performance, use the appropriate tools.
+        When a user asks you to create, write, or save a report to a file, use the write_report_to_file tool.
         Always provide specific, actionable advice with clear next steps.
         """
 
@@ -209,8 +228,27 @@ class SEOConsultant:
                     "content": str(result.data if result.success else result.error_message)
                 })
 
-                # If website analysis succeeded, create recommendations
+                # If website analysis succeeded, save analysis and create recommendations
                 if tool_name == "analyze_website" and result.success:
+                    # Ensure URL has scheme for Pydantic validation
+                    analyzed_url = result.data.get('url', tool_input["url"])
+                    if not analyzed_url.startswith(('http://', 'https://')):
+                        analyzed_url = f"https://{analyzed_url}"
+
+                    # Save the full website analysis to memory
+                    analysis = WebsiteAnalysis(
+                        url=analyzed_url,
+                        title=result.data.get('title'),
+                        meta_description=result.data.get('meta_description'),
+                        h1_tags=result.data.get('h1_tags', []),
+                        content_quality_score=result.data.get('content_quality_score'),
+                        ai_readiness_score=result.data.get('ai_readiness_score'),
+                        technical_issues=result.data.get('technical_issues', []),
+                        content_suggestions=result.data.get('content_suggestions', [])
+                    )
+                    self.memory.add_website_analysis(analysis)
+
+                    # Create and save recommendations
                     recommendations = await self._create_recommendations(result.data)
                     for rec in recommendations:
                         self.memory.add_recommendation(rec)
@@ -257,6 +295,11 @@ class SEOConsultant:
             elif tool_name == "track_performance":
                 timeframe = tool_input.get("timeframe", "30d")
                 return await tools.track_performance(tool_input["domain"], timeframe)
+            elif tool_name == "write_report_to_file":
+                return await tools.write_report_to_file(
+                    tool_input["filename"],
+                    tool_input["content"]
+                )
             else:
                 return ToolResponse(
                     tool_name=tool_name,

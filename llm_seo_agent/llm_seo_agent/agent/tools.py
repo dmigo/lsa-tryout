@@ -327,3 +327,41 @@ class SEOTools:
                 error_message=str(e),
                 execution_time=time.time() - start_time
             )
+
+    async def write_report_to_file(self, filename: str, content: str) -> ToolResponse:
+        """Write a report to a markdown file."""
+        start_time = time.time()
+
+        try:
+            from pathlib import Path
+
+            # Ensure filename ends with .md
+            if not filename.endswith('.md'):
+                filename = f"{filename}.md"
+
+            # Write to file
+            output_path = Path(filename)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+
+            return ToolResponse(
+                tool_name="write_report_to_file",
+                success=True,
+                data={
+                    'filename': filename,
+                    'path': str(output_path.absolute()),
+                    'size_bytes': len(content),
+                    'size_kb': round(len(content) / 1024, 2)
+                },
+                execution_time=time.time() - start_time
+            )
+
+        except Exception as e:
+            return ToolResponse(
+                tool_name="write_report_to_file",
+                success=False,
+                error_message=str(e),
+                execution_time=time.time() - start_time
+            )

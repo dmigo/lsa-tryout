@@ -274,20 +274,68 @@ User Profile Summary:
             for i, analysis in enumerate(session.website_analyses, 1):
                 lines.append(f"### Analysis #{i}: {analysis.url}")
                 lines.append("")
-                lines.append(f"**Date:** {analysis.analyzed_at.strftime('%Y-%m-%d %H:%M')}")
-                lines.append(f"**AI Readiness Score:** {analysis.ai_readiness_score}/100")
+                lines.append(f"**Analyzed:** {analysis.analyzed_at.strftime('%Y-%m-%d %H:%M')}")
                 lines.append("")
 
-                if analysis.technical_issues:
-                    lines.append("**Technical Issues:**")
-                    for issue in analysis.technical_issues:
-                        lines.append(f"- {issue}")
+                # AI Readiness Score with visual indicator
+                score = analysis.ai_readiness_score or 0
+                if score >= 80:
+                    score_indicator = "🟢 Excellent"
+                elif score >= 60:
+                    score_indicator = "🟡 Good"
+                elif score >= 40:
+                    score_indicator = "🟠 Needs Improvement"
+                else:
+                    score_indicator = "🔴 Critical"
+
+                lines.append(f"**AI Readiness Score:** {score}/100 {score_indicator}")
+                lines.append("")
+
+                # Page Metadata
+                lines.append("#### 📄 Page Metadata")
+                lines.append("")
+                if analysis.title:
+                    lines.append(f"**Title:** {analysis.title}")
+                else:
+                    lines.append("**Title:** ❌ Missing")
+
+                if analysis.meta_description:
+                    lines.append(f"**Meta Description:** {analysis.meta_description}")
+                else:
+                    lines.append("**Meta Description:** ❌ Missing")
+                lines.append("")
+
+                # Content Structure
+                lines.append("#### 📐 Content Structure")
+                lines.append("")
+                if analysis.h1_tags:
+                    lines.append(f"**H1 Tags ({len(analysis.h1_tags)}):**")
+                    for h1 in analysis.h1_tags[:5]:  # Show max 5
+                        lines.append(f"- {h1}")
+                    if len(analysis.h1_tags) > 5:
+                        lines.append(f"- *...and {len(analysis.h1_tags) - 5} more*")
+                else:
+                    lines.append("**H1 Tags:** ❌ None found")
+                lines.append("")
+
+                if analysis.content_quality_score is not None:
+                    lines.append(f"**Content Quality Score:** {analysis.content_quality_score}/100")
                     lines.append("")
 
+                # Technical Issues
+                if analysis.technical_issues:
+                    lines.append("#### 🚨 Technical Issues")
+                    lines.append("")
+                    for issue in analysis.technical_issues:
+                        lines.append(f"- ❌ {issue}")
+                    lines.append("")
+
+                # Content Suggestions
                 if analysis.content_suggestions:
-                    lines.append("**Content Suggestions:**")
+                    lines.append("#### 💡 Content Optimization Suggestions")
+                    lines.append("")
                     for suggestion in analysis.content_suggestions:
-                        lines.append(f"- {suggestion}")
+                        lines.append(f"- 📝 {suggestion}")
                     lines.append("")
 
         # Recommendations
