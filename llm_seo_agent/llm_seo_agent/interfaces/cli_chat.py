@@ -42,7 +42,9 @@ class CLIChatInterface:
         # Show session ID
         session_id = self.conversation_manager.consultant.memory.current_session.session_id
         self.console.print(f"[dim]📁 Session ID: {session_id}[/dim]")
-        self.console.print(f"[dim]💾 Conversation saved to: data/conversations/{session_id}.json[/dim]")
+        self.console.print(
+            f"[dim]💾 Conversation saved to: data/conversations/{session_id}.json[/dim]"
+        )
         self.console.print()
 
         self._print_agent_message(welcome_message)
@@ -86,14 +88,10 @@ class CLIChatInterface:
         header_text = Text.assemble(
             ("🤖 ", "bright_blue"),
             ("LLM SEO Agent", "bold bright_blue"),
-            (" - Your AI Search Optimization Consultant", "blue")
+            (" - Your AI Search Optimization Consultant", "blue"),
         )
 
-        panel = Panel.fit(
-            header_text,
-            border_style="bright_blue",
-            padding=(1, 2)
-        )
+        panel = Panel.fit(header_text, border_style="bright_blue", padding=(1, 2))
 
         self.console.print()
         self.console.print(panel)
@@ -115,11 +113,13 @@ class CLIChatInterface:
 • "Analyze example.com for SEO opportunities"
 """
 
-        self.console.print(Panel(
-            Markdown(welcome_text),
-            title="[bold green]Getting Started[/bold green]",
-            border_style="green"
-        ))
+        self.console.print(
+            Panel(
+                Markdown(welcome_text),
+                title="[bold green]Getting Started[/bold green]",
+                border_style="green",
+            )
+        )
         self.console.print()
 
     def _show_footer(self):
@@ -127,7 +127,7 @@ class CLIChatInterface:
         footer = Panel.fit(
             "Thanks for using LLM SEO Agent! Your conversation has been saved.",
             border_style="dim",
-            title="[dim]Session Ended[/dim]"
+            title="[dim]Session Ended[/dim]",
         )
         self.console.print()
         self.console.print(footer)
@@ -138,8 +138,7 @@ class CLIChatInterface:
             # Create a future for the input
             loop = asyncio.get_event_loop()
             user_input = await loop.run_in_executor(
-                None,
-                lambda: Prompt.ask("\n[bold green]You[/bold green]", console=self.console)
+                None, lambda: Prompt.ask("\n[bold green]You[/bold green]", console=self.console)
             )
             return user_input.strip()
         except EOFError:
@@ -155,7 +154,7 @@ class CLIChatInterface:
             formatted_message,
             title="[bold blue]🤖 SEO Agent[/bold blue]",
             border_style="blue",
-            padding=(1, 2)
+            padding=(1, 2),
         )
 
         self.console.print(panel)
@@ -172,7 +171,9 @@ class CLIChatInterface:
     async def _handle_message_event(self, event_type: str, data: dict):
         """Handle message events for CLI-specific formatting."""
         if event_type == "session_start":
-            self.console.print(f"[dim]Session started for user: {data.get('user_id', 'default')}[/dim]")
+            self.console.print(
+                f"[dim]Session started for user: {data.get('user_id', 'default')}[/dim]"
+            )
 
         elif event_type == "message_exchange":
             # Could add message logging or other CLI-specific handling here
@@ -234,8 +235,7 @@ class CLIChatInterface:
         try:
             # Export the current session
             markdown_content = self.conversation_manager.consultant.memory.export_to_markdown(
-                output_path=output_file,
-                include_conversation=include_conversation
+                output_path=output_file, include_conversation=include_conversation
             )
 
             # Show success message
@@ -248,7 +248,7 @@ class CLIChatInterface:
                 f"[bold]Includes conversation:[/bold] {'Yes' if include_conversation else 'No'}\n\n"
                 f"[dim]You can now share this report with colleagues or clients![/dim]",
                 title="[bold green]Export Complete[/bold green]",
-                border_style="green"
+                border_style="green",
             )
 
             self.console.print()
@@ -284,9 +284,7 @@ class CLIChatInterface:
 """
 
         panel = Panel(
-            Markdown(status_text),
-            title="[bold cyan]Your Progress[/bold cyan]",
-            border_style="cyan"
+            Markdown(status_text), title="[bold cyan]Your Progress[/bold cyan]", border_style="cyan"
         )
 
         self.console.print()
@@ -297,7 +295,9 @@ class CLIChatInterface:
         session = self.conversation_manager.consultant.memory.current_session
 
         if not session or not session.recommendations:
-            self.console.print("[yellow]No recommendations yet. Ask for a website analysis to get started![/yellow]")
+            self.console.print(
+                "[yellow]No recommendations yet. Ask for a website analysis to get started![/yellow]"
+            )
             return
 
         # Create table
@@ -309,21 +309,23 @@ class CLIChatInterface:
 
         for rec in session.recommendations:
             # Color code priority
-            priority_color = {"high": "red", "medium": "yellow", "low": "green"}.get(rec.priority, "white")
+            priority_color = {"high": "red", "medium": "yellow", "low": "green"}.get(
+                rec.priority, "white"
+            )
 
             # Status emoji
             status_emoji = {
                 "pending": "⏳",
                 "in_progress": "🔄",
                 "completed": "✅",
-                "dismissed": "❌"
+                "dismissed": "❌",
             }.get(rec.implementation_status, "•")
 
             table.add_row(
                 rec.id[:8],
                 rec.title,
                 f"[{priority_color}]{rec.priority.upper()}[/{priority_color}]",
-                f"{status_emoji} {rec.implementation_status}"
+                f"{status_emoji} {rec.implementation_status}",
             )
 
         self.console.print()
@@ -331,37 +333,36 @@ class CLIChatInterface:
 
     def _show_help_panel(self):
         """Show help information in a formatted panel."""
-        help_content = """
-**Chat Commands:**
-• Type naturally: "Analyze my website: example.com"
-• `/help` - Show this help
-• `/status` - View your progress
-• `/recommendations` - See your SEO recommendations
-• `/export` - Export report as markdown
-• `/exit` (or `/quit`, `/bye`) - End session
-• `exit` or `quit` (without slash) - Also works
+        help_content = """**Chat Commands:**
+- Type naturally: "Analyze my website: example.com"
+- `/help` - Show this help
+- `/status` - View your progress
+- `/recommendations` - See your SEO recommendations
+- `/export` - Export report as markdown
+- `/exit` (or `/quit`, `/bye`) - End session
+- `exit` or `quit` (without slash) - Also works
 
 **Export Options:**
-• `/export` - Export with default filename
-• `/export -o myreport.md` - Export to specific file
-• `/export --with-conversation` - Include full chat history
-• `/export -o report.md -c` - Combine options
+- `/export` - Export with default filename
+- `/export -o myreport.md` - Export to specific file
+- `/export --with-conversation` - Include full chat history
+- `/export -o report.md -c` - Combine options
 
 **Analysis Requests:**
-• "Analyze [website-url]"
-• "Compare me to [competitor-url]"
-• "Check my AI search performance"
-• "How do I optimize for AI search?"
+- "Analyze [website-url]"
+- "Compare me to [competitor-url]"
+- "Check my AI search performance"
+- "How do I optimize for AI search?"
 
 **Recommendation Management:**
-• `/complete [rec-id]` - Mark recommendation as done
-• `/progress [rec-id]` - Mark as in progress
+- `/complete [rec-id]` - Mark recommendation as done
+- `/progress [rec-id]` - Mark as in progress
 """
 
         panel = Panel(
             Markdown(help_content),
             title="[bold yellow]Help & Commands[/bold yellow]",
-            border_style="yellow"
+            border_style="yellow",
         )
 
         self.console.print(panel)
@@ -376,28 +377,19 @@ class InteractiveCLI:
 
     async def run_interactive_setup(self):
         """Run interactive setup to gather user information."""
-        self.console.print(Panel.fit(
-            "🚀 Welcome to LLM SEO Agent Setup",
-            style="bold blue"
-        ))
+        self.console.print(Panel.fit("🚀 Welcome to LLM SEO Agent Setup", style="bold blue"))
 
         # Get user information
         self.console.print("\n[bold]Let's get you set up for SEO success![/bold]")
 
-        user_id = Prompt.ask(
-            "[green]What's your name or company?[/green]",
-            default="Anonymous"
-        )
+        user_id = Prompt.ask("[green]What's your name or company?[/green]", default="Anonymous")
 
-        website_url = Prompt.ask(
-            "[green]What's your website URL?[/green] (optional)",
-            default=""
-        )
+        website_url = Prompt.ask("[green]What's your website URL?[/green] (optional)", default="")
 
         industry = Prompt.ask(
             "[green]What industry are you in?[/green]",
             choices=["tech", "ecommerce", "b2b", "healthcare", "finance", "other"],
-            default="other"
+            default="other",
         )
 
         # Show setup summary
@@ -413,17 +405,19 @@ class InteractiveCLI:
         self.console.print(setup_table)
 
         # Confirm and start
-        if Prompt.ask("\n[yellow]Start your SEO consultation?[/yellow]", choices=["y", "n"], default="y") == "y":
+        if (
+            Prompt.ask(
+                "\n[yellow]Start your SEO consultation?[/yellow]", choices=["y", "n"], default="y"
+            )
+            == "y"
+        ):
             await self.chat_interface.start(user_id=user_id, website_url=website_url or None)
         else:
             self.console.print("[red]Setup cancelled.[/red]")
 
     async def run_quick_analysis(self, url: str):
         """Run a quick website analysis without full chat interface."""
-        self.console.print(Panel.fit(
-            f"🔍 Quick Analysis: {url}",
-            style="bold blue"
-        ))
+        self.console.print(Panel.fit(f"🔍 Quick Analysis: {url}", style="bold blue"))
 
         # Start a temporary session
         manager = ConversationManager()
@@ -436,14 +430,19 @@ class InteractiveCLI:
         panel = Panel(
             Markdown(response),
             title="[bold green]Analysis Results[/bold green]",
-            border_style="green"
+            border_style="green",
         )
 
         self.console.print()
         self.console.print(panel)
 
         # Ask if they want to continue with full consultation
-        if Prompt.ask("\n[yellow]Start full SEO consultation?[/yellow]", choices=["y", "n"], default="n") == "y":
+        if (
+            Prompt.ask(
+                "\n[yellow]Start full SEO consultation?[/yellow]", choices=["y", "n"], default="n"
+            )
+            == "y"
+        ):
             await self.chat_interface.start(website_url=url)
 
 
