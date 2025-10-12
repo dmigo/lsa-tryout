@@ -4,8 +4,13 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from llm_seo_agent.utils.data_models import (
-    ConversationSession, ConversationMessage, UserProfile,
-    SEORecommendation, WebsiteAnalysis, CompetitorAnalysis, ConversationRole
+    ConversationSession,
+    ConversationMessage,
+    UserProfile,
+    SEORecommendation,
+    WebsiteAnalysis,
+    CompetitorAnalysis,
+    ConversationRole,
 )
 
 
@@ -16,21 +21,15 @@ class ConversationMemory:
         self.current_session: Optional[ConversationSession] = None
         self.retention_days = 30
 
-    def create_session(self, user_id: str, website_url: Optional[str] = None,
-                      industry: Optional[str] = None) -> ConversationSession:
+    def create_session(
+        self, user_id: str, website_url: Optional[str] = None, industry: Optional[str] = None
+    ) -> ConversationSession:
         """Create a new conversation session."""
         session_id = str(uuid.uuid4())
 
-        user_profile = UserProfile(
-            user_id=user_id,
-            website_url=website_url,
-            industry=industry
-        )
+        user_profile = UserProfile(user_id=user_id, website_url=website_url, industry=industry)
 
-        session = ConversationSession(
-            session_id=session_id,
-            user_profile=user_profile
-        )
+        session = ConversationSession(session_id=session_id, user_profile=user_profile)
 
         self.current_session = session
         self._save_session(session)
@@ -54,7 +53,9 @@ class ConversationMemory:
             print(f"Error loading session {session_id}: {e}")
             return None
 
-    def get_or_create_session(self, user_id: str, website_url: Optional[str] = None) -> ConversationSession:
+    def get_or_create_session(
+        self, user_id: str, website_url: Optional[str] = None
+    ) -> ConversationSession:
         """Get the most recent session for a user or create a new one."""
         recent_session = self._find_recent_session(user_id)
 
@@ -69,11 +70,7 @@ class ConversationMemory:
         if not self.current_session:
             raise ValueError("No active session. Create or load a session first.")
 
-        message = ConversationMessage(
-            role=role,
-            content=content,
-            metadata=metadata or {}
-        )
+        message = ConversationMessage(role=role, content=content, metadata=metadata or {})
 
         self.current_session.messages.append(message)
         self.current_session.updated_at = datetime.now()
@@ -136,7 +133,12 @@ class ConversationMemory:
         if self.current_session.recommendations:
             context_parts.append("\nRecent recommendations:")
             for rec in self.current_session.recommendations[-3:]:
-                status_emoji = {"pending": "⏳", "in_progress": "🔄", "completed": "✅", "dismissed": "❌"}
+                status_emoji = {
+                    "pending": "⏳",
+                    "in_progress": "🔄",
+                    "completed": "✅",
+                    "dismissed": "❌",
+                }
                 emoji = status_emoji.get(rec.implementation_status, "")
                 context_parts.append(f"{emoji} {rec.title} ({rec.priority} priority)")
 
@@ -150,8 +152,13 @@ class ConversationMemory:
         profile = self.current_session.user_profile
         total_messages = len(self.current_session.messages)
         total_recommendations = len(self.current_session.recommendations)
-        completed_recommendations = len([r for r in self.current_session.recommendations
-                                       if r.implementation_status == "completed"])
+        completed_recommendations = len(
+            [
+                r
+                for r in self.current_session.recommendations
+                if r.implementation_status == "completed"
+            ]
+        )
 
         summary = f"""
 User Profile Summary:
@@ -173,7 +180,9 @@ User Profile Summary:
                 with open(session_file, 'r') as f:
                     session_data = json.load(f)
 
-                created_at = datetime.fromisoformat(session_data['created_at'].replace('Z', '+00:00'))
+                created_at = datetime.fromisoformat(
+                    session_data['created_at'].replace('Z', '+00:00')
+                )
 
                 if created_at < cutoff_date:
                     session_file.unlink()
@@ -203,7 +212,9 @@ User Profile Summary:
                     session_data = json.load(f)
 
                 if session_data['user_profile']['user_id'] == user_id:
-                    updated_at = datetime.fromisoformat(session_data['updated_at'].replace('Z', '+00:00'))
+                    updated_at = datetime.fromisoformat(
+                        session_data['updated_at'].replace('Z', '+00:00')
+                    )
 
                     if recent_time is None or updated_at > recent_time:
                         recent_time = updated_at
@@ -213,3 +224,180 @@ User Profile Summary:
                 print(f"Error processing {session_file}: {e}")
 
         return recent_session
+
+    def export_to_markdown(
+        self, output_path: Optional[str] = None, include_conversation: bool = False
+    ) -> str:
+        """Export current session's recommendations and analysis to markdown.
+
+        Args:
+            output_path: Path to save the markdown file. If None, returns content only.
+            include_conversation: Whether to include full conversation history.
+
+        Returns:
+            The markdown content as a string.
+        """
+        if not self.current_session:
+            raise ValueError("No active session to export")
+
+        session = self.current_session
+        profile = session.user_profile
+
+        # Build markdown content
+        lines = []
+
+        # Header
+        lines.append("# SEO Consultation Report")
+        lines.append("")
+        lines.append(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        lines.append(f"**Session ID:** `{session.session_id}`")
+        lines.append("")
+
+        # User Profile
+        lines.append("## 👤 Client Profile")
+        lines.append("")
+        if profile.website_url:
+            lines.append(f"**Website:** {profile.website_url}")
+        if profile.industry:
+            lines.append(f"**Industry:** {profile.industry}")
+        if profile.seo_goals:
+            lines.append(f"**SEO Goals:** {', '.join(profile.seo_goals)}")
+        if profile.current_challenges:
+            lines.append(f"**Current Challenges:** {', '.join(profile.current_challenges)}")
+        lines.append("")
+
+        # Website Analyses
+        if session.website_analyses:
+            lines.append("## 🔍 Website Analysis")
+            lines.append("")
+
+            for i, analysis in enumerate(session.website_analyses, 1):
+                lines.append(f"### Analysis #{i}: {analysis.url}")
+                lines.append("")
+                lines.append(f"**Date:** {analysis.analyzed_at.strftime('%Y-%m-%d %H:%M')}")
+                lines.append(f"**AI Readiness Score:** {analysis.ai_readiness_score}/100")
+                lines.append("")
+
+                if analysis.technical_issues:
+                    lines.append("**Technical Issues:**")
+                    for issue in analysis.technical_issues:
+                        lines.append(f"- {issue}")
+                    lines.append("")
+
+                if analysis.content_suggestions:
+                    lines.append("**Content Suggestions:**")
+                    for suggestion in analysis.content_suggestions:
+                        lines.append(f"- {suggestion}")
+                    lines.append("")
+
+        # Recommendations
+        if session.recommendations:
+            lines.append("## 📋 SEO Recommendations")
+            lines.append("")
+
+            # Group by status
+            pending = [r for r in session.recommendations if r.implementation_status == "pending"]
+            in_progress = [
+                r for r in session.recommendations if r.implementation_status == "in_progress"
+            ]
+            completed = [
+                r for r in session.recommendations if r.implementation_status == "completed"
+            ]
+
+            if pending:
+                lines.append("### 🔴 Pending Recommendations")
+                lines.append("")
+                for rec in pending:
+                    lines.append(f"#### {rec.title}")
+                    lines.append(
+                        f"**Priority:** {rec.priority.upper()} | **Category:** {rec.category}"
+                    )
+                    lines.append("")
+                    lines.append(rec.description)
+                    lines.append("")
+                    if rec.estimated_impact:
+                        lines.append(f"**Estimated Impact:** {rec.estimated_impact}")
+                        lines.append("")
+
+            if in_progress:
+                lines.append("### 🟡 In Progress")
+                lines.append("")
+                for rec in in_progress:
+                    lines.append(f"#### {rec.title}")
+                    lines.append(
+                        f"**Priority:** {rec.priority.upper()} | **Category:** {rec.category}"
+                    )
+                    lines.append("")
+                    lines.append(rec.description)
+                    lines.append("")
+
+            if completed:
+                lines.append("### ✅ Completed")
+                lines.append("")
+                for rec in completed:
+                    lines.append(f"- {rec.title} ({rec.category})")
+                lines.append("")
+
+        # Competitor Analyses
+        if session.competitor_analyses:
+            lines.append("## 🏆 Competitive Analysis")
+            lines.append("")
+
+            for analysis in session.competitor_analyses:
+                lines.append(f"### {analysis.your_domain} vs Competitors")
+                lines.append("")
+                lines.append(f"**Analyzed:** {analysis.analyzed_at.strftime('%Y-%m-%d %H:%M')}")
+                lines.append("")
+
+                if analysis.key_insights:
+                    lines.append("**Key Insights:**")
+                    for insight in analysis.key_insights:
+                        lines.append(f"- {insight}")
+                    lines.append("")
+
+                if analysis.recommendations:
+                    lines.append("**Recommendations:**")
+                    for rec in analysis.recommendations:
+                        lines.append(f"- {rec}")
+                    lines.append("")
+
+        # Conversation History (optional)
+        if include_conversation and session.messages:
+            lines.append("## 💬 Conversation History")
+            lines.append("")
+
+            for msg in session.messages:
+                role_emoji = "👤" if msg.role == ConversationRole.USER else "🤖"
+                role_label = "You" if msg.role == ConversationRole.USER else "Agent"
+                lines.append(
+                    f"### {role_emoji} {role_label} ({msg.timestamp.strftime('%H:%M:%S')})"
+                )
+                lines.append("")
+                lines.append(msg.content)
+                lines.append("")
+
+        # Summary
+        lines.append("## 📊 Summary")
+        lines.append("")
+        lines.append(f"- **Total Conversations:** {len(session.messages) // 2}")
+        lines.append(f"- **Recommendations Given:** {len(session.recommendations)}")
+        lines.append(
+            f"- **Completed Actions:** {len([r for r in session.recommendations if r.implementation_status == 'completed'])}"
+        )
+        lines.append(f"- **Website Analyses:** {len(session.website_analyses)}")
+        lines.append(f"- **Competitor Analyses:** {len(session.competitor_analyses)}")
+        lines.append("")
+        lines.append("---")
+        lines.append("")
+        lines.append("*Generated by LLM SEO Agent*")
+
+        markdown_content = "\n".join(lines)
+
+        # Save to file if path provided
+        if output_path:
+            output_file = Path(output_path)
+            output_file.parent.mkdir(parents=True, exist_ok=True)
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write(markdown_content)
+
+        return markdown_content

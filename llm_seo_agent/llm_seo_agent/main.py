@@ -287,6 +287,57 @@ def setup():
 
 
 @main.command()
+@click.option('--output', '-o', help='Output file path (default: seo_report_YYYYMMDD.md)')
+@click.option('--with-conversation', is_flag=True, help='Include full conversation history')
+@click.option('--user-id', default='default_user', help='User ID to export session for')
+def export(output, with_conversation, user_id):
+    """Export SEO recommendations and analysis as markdown report."""
+
+    try:
+        from .agent.memory import ConversationMemory
+
+        # Initialize memory
+        memory = ConversationMemory()
+
+        # Load most recent session for user
+        session = memory._find_recent_session(user_id)
+
+        if not session:
+            console.print(f"[yellow]No session found for user: {user_id}[/yellow]")
+            console.print("Run a conversation first using 'python main.py chat'")
+            return
+
+        memory.current_session = session
+
+        # Generate default output path if not provided
+        if not output:
+            from datetime import datetime
+            output = f"seo_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+
+        # Export to markdown
+        console.print(f"[blue]Exporting session {session.session_id[:8]}...[/blue]")
+        markdown_content = memory.export_to_markdown(
+            output_path=output,
+            include_conversation=with_conversation
+        )
+
+        console.print(f"[green]✅ Report exported successfully![/green]")
+        console.print(f"[green]📄 File: {output}[/green]")
+        console.print(f"\n[dim]Summary:[/dim]")
+        console.print(f"  • Recommendations: {len(session.recommendations)}")
+        console.print(f"  • Website analyses: {len(session.website_analyses)}")
+        console.print(f"  • Conversations: {len(session.messages) // 2}")
+
+        if with_conversation:
+            console.print(f"  • Full conversation history included")
+
+    except Exception as e:
+        console.print(f"[red]Export failed: {e}[/red]")
+        import traceback
+        console.print(f"[dim]{traceback.format_exc()}[/dim]")
+
+
+@main.command()
 def version():
     """Show version information."""
     console.print("[bold blue]LLM SEO Agent[/bold blue] v1.0.0")
@@ -297,6 +348,7 @@ def version():
     console.print("  • Competitor analysis")
     console.print("  • Performance monitoring")
     console.print("  • Interactive chat interface")
+    console.print("  • Export recommendations as markdown")
 
 
 if __name__ == "__main__":

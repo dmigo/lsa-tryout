@@ -54,6 +54,11 @@ class CLIChatInterface:
                 if not user_input or user_input.lower() in ['exit', 'quit', 'bye']:
                     break
 
+                # Handle special commands
+                if user_input.startswith('/'):
+                    await self._handle_command(user_input)
+                    continue
+
                 # Show typing indicator
                 with Status("[bold blue]Thinking...", console=self.console, spinner="dots"):
                     response = await self.conversation_manager.process_message(user_input)
@@ -96,6 +101,7 @@ class CLIChatInterface:
 • Ask specific questions like "How do I optimize for AI search?"
 • Request analysis: "Analyze my website" or "Compare me to competitor.com"
 • Use `/help` to see all commands
+• Use `/export` to save your recommendations as markdown
 
 🚀 **Example questions:**
 • "My website isn't showing up in ChatGPT responses"
@@ -175,6 +181,136 @@ class CLIChatInterface:
         self.console.print("\n[yellow]Shutting down gracefully...[/yellow]")
         self.running = False
 
+    async def _handle_command(self, command: str):
+        """Handle special slash commands."""
+        cmd_parts = command.split()
+        cmd = cmd_parts[0].lower()
+
+        if cmd == '/help':
+            self._show_help_panel()
+
+        elif cmd == '/export':
+            await self._handle_export_command(cmd_parts)
+
+        elif cmd == '/status':
+            await self._show_status()
+
+        elif cmd == '/recommendations':
+            await self._show_recommendations()
+
+        else:
+            self.console.print(f"[yellow]Unknown command: {cmd}[/yellow]")
+            self.console.print("Type [bold]/help[/bold] to see available commands")
+
+    async def _handle_export_command(self, cmd_parts: list):
+        """Handle the /export command."""
+        from datetime import datetime
+        from pathlib import Path
+
+        # Parse options
+        include_conversation = '--with-conversation' in cmd_parts or '-c' in cmd_parts
+
+        # Get output filename
+        output_file = None
+        for i, part in enumerate(cmd_parts):
+            if part in ['-o', '--output'] and i + 1 < len(cmd_parts):
+                output_file = cmd_parts[i + 1]
+                break
+
+        # Default filename if not specified
+        if not output_file:
+            output_file = f"seo_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+
+        try:
+            # Export the current session
+            markdown_content = self.conversation_manager.consultant.memory.export_to_markdown(
+                output_path=output_file,
+                include_conversation=include_conversation
+            )
+
+            # Show success message
+            file_path = Path(output_file).absolute()
+
+            success_panel = Panel(
+                f"[green]✅ Report exported successfully![/green]\n\n"
+                f"[bold]File:[/bold] {file_path}\n"
+                f"[bold]Size:[/bold] {len(markdown_content)} bytes\n"
+                f"[bold]Includes conversation:[/bold] {'Yes' if include_conversation else 'No'}\n\n"
+                f"[dim]You can now share this report with colleagues or clients![/dim]",
+                title="[bold green]Export Complete[/bold green]",
+                border_style="green"
+            )
+
+            self.console.print()
+            self.console.print(success_panel)
+
+        except Exception as e:
+            self.console.print(f"[red]❌ Export failed: {e}[/red]")
+
+    async def _show_status(self):
+        """Show user progress and status."""
+        progress = await self.conversation_manager.consultant.get_user_progress()
+
+        if not progress:
+            self.console.print("[yellow]No progress data available yet.[/yellow]")
+            return
+
+        status_text = f"""
+**Your SEO Journey:**
+• Total Conversations: {progress.get('total_conversations', 0)}
+• Recommendations: {progress['recommendations']['total']}
+• Completed: {progress['recommendations']['completed']}
+• In Progress: {progress['recommendations']['in_progress']}
+• Completion Rate: {progress['recommendations']['completion_rate']:.1f}%
+• Website Analyses: {progress.get('website_analyses', 0)}
+"""
+
+        panel = Panel(
+            Markdown(status_text),
+            title="[bold cyan]Your Progress[/bold cyan]",
+            border_style="cyan"
+        )
+
+        self.console.print()
+        self.console.print(panel)
+
+    async def _show_recommendations(self):
+        """Show current recommendations."""
+        session = self.conversation_manager.consultant.memory.current_session
+
+        if not session or not session.recommendations:
+            self.console.print("[yellow]No recommendations yet. Ask for a website analysis to get started![/yellow]")
+            return
+
+        # Create table
+        table = Table(title="Your SEO Recommendations")
+        table.add_column("ID", style="dim", width=8)
+        table.add_column("Title", style="bold")
+        table.add_column("Priority", justify="center")
+        table.add_column("Status", justify="center")
+
+        for rec in session.recommendations:
+            # Color code priority
+            priority_color = {"high": "red", "medium": "yellow", "low": "green"}.get(rec.priority, "white")
+
+            # Status emoji
+            status_emoji = {
+                "pending": "⏳",
+                "in_progress": "🔄",
+                "completed": "✅",
+                "dismissed": "❌"
+            }.get(rec.implementation_status, "•")
+
+            table.add_row(
+                rec.id[:8],
+                rec.title,
+                f"[{priority_color}]{rec.priority.upper()}[/{priority_color}]",
+                f"{status_emoji} {rec.implementation_status}"
+            )
+
+        self.console.print()
+        self.console.print(table)
+
     def _show_help_panel(self):
         """Show help information in a formatted panel."""
         help_content = """
@@ -183,8 +319,15 @@ class CLIChatInterface:
 • `/help` - Show this help
 • `/status` - View your progress
 • `/recommendations` - See your SEO recommendations
+• `/export` - Export report as markdown
 • `/new` - Start fresh conversation
 • `exit` or `quit` - End session
+
+**Export Options:**
+• `/export` - Export with default filename
+• `/export -o myreport.md` - Export to specific file
+• `/export --with-conversation` - Include full chat history
+• `/export -o report.md -c` - Combine options
 
 **Analysis Requests:**
 • "Analyze [website-url]"
