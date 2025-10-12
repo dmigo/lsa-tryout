@@ -39,6 +39,12 @@ class CLIChatInterface:
         with Status("[bold blue]Starting conversation...", console=self.console, spinner="dots"):
             welcome_message = await self.conversation_manager.start_session(user_id, website_url)
 
+        # Show session ID
+        session_id = self.conversation_manager.consultant.memory.current_session.session_id
+        self.console.print(f"[dim]📁 Session ID: {session_id}[/dim]")
+        self.console.print(f"[dim]💾 Conversation saved to: data/conversations/{session_id}.json[/dim]")
+        self.console.print()
+
         self._print_agent_message(welcome_message)
 
         # Main chat loop
@@ -259,7 +265,15 @@ class CLIChatInterface:
             self.console.print("[yellow]No progress data available yet.[/yellow]")
             return
 
+        # Get session ID
+        session = self.conversation_manager.consultant.memory.current_session
+        session_id = session.session_id if session else "Unknown"
+
         status_text = f"""
+**Session Info:**
+• Session ID: `{session_id}`
+• File: `data/conversations/{session_id}.json`
+
 **Your SEO Journey:**
 • Total Conversations: {progress.get('total_conversations', 0)}
 • Recommendations: {progress['recommendations']['total']}
