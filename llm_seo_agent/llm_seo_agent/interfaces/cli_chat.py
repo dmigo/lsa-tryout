@@ -198,6 +198,10 @@ class CLIChatInterface:
         elif cmd == '/recommendations':
             await self._show_recommendations()
 
+        elif cmd in ['/exit', '/quit', '/bye']:
+            self.running = False
+            self.console.print("[yellow]Ending session...[/yellow]")
+
         else:
             self.console.print(f"[yellow]Unknown command: {cmd}[/yellow]")
             self.console.print("Type [bold]/help[/bold] to see available commands")
@@ -320,8 +324,8 @@ class CLIChatInterface:
 • `/status` - View your progress
 • `/recommendations` - See your SEO recommendations
 • `/export` - Export report as markdown
-• `/new` - Start fresh conversation
-• `exit` or `quit` - End session
+• `/exit` (or `/quit`, `/bye`) - End session
+• `exit` or `quit` (without slash) - Also works
 
 **Export Options:**
 • `/export` - Export with default filename
